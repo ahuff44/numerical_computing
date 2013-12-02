@@ -1,0 +1,61 @@
+\lab{Applications}{Web Scraping}{Web Scraping}
+\objective{Learn how do scrape data from the internet}
+\label{lab:Web_Scraping}
+
+\section*{Web Crawlers}
+First, let's make a web crawler! When you click on a link on the internet, the web server you're connected to generates and sends you a HTML file, like this one:
+
+\lstinputlisting[style=fromfile]{example_html.html}
+If you save this file and open it with your internet browser, it'll look like a very basic webpage. HTML is simply another language, like Python, that can both be displayed as it's text source, or can be interpreted and displayed as the sort of webpage you're used to seeing in your web browser. When you enter a URL in your browser, e.g. \texttt{"https://www.google.com/"}, the following events happen: (clearly, this is a simplistic view)
+\begin{enumerate}
+\item The browser uses deep magic to connect with whichever server is hosting \texttt{"https://www.google.com/"}. (A \emph{server} is a computer that is always on and always connected to the internet.)
+\item The server generates an HTML file (for simple webpages, the server might have a premade HTML file that never needs adjusting)
+\item The server sends the generated HTML file over the internet to your computer
+\item Your browser interprets the HTML it recieves to displays it apprpriately as a webpage.
+\end{enumerate}
+
+For our web scraper, we first need is some function \li{get_page(url)} that simulates the first three steps above, taking in a URL (like \texttt{"https://www.google.com/"}) and returning the corresponding HTML text. This is actually quite easy:
+\begin{lstlisting}
+def get_page(url):
+    """Takes in a url and returns a string composed of that url's HTML text.
+        Returns an empty string if the webpage could not be retrieved.
+    """
+    try:
+        import urllib
+        return urllib.urlopen(url).read()
+    except:
+        print
+        print "*** Error opening url '%s'. ***" % url
+        print
+        return ""
+\end{lstlisting}
+
+Secondly, we need to know how HTML hyperlinks work. Again, this is very simple. Within the HTML text file, links are of the form \texttt{<a href="http://example.com/">Link text</a>}. Thus, the following generating function will generate all URLs that it finds withing an HTML page:
+\begin{lstlisting}
+def gen_all_links(page):
+    """ Given a string page, generates all urls that are linked from this page
+        page should be an HTML text file, not a URL.
+    """
+    pos = -1
+    try:
+        while True:
+            start_link = page.index('<a href=', pos+1)
+            url_start = page.index('"', start_link)+1
+            pos = url_end = page.index('"', url_start)
+            yield page[url_start:url_end]
+    except ValueError: # we've found all the links found
+        pass
+\end{lstlisting}
+
+Knowing these two facts, it isn't hard to write a simple web crawler: % TODO maybe have them fill in some of this?
+\lstinputlisting[style=fromfile]{web_crawler.py}
+
+% % % LAB OUTLINE
+% TODO Intro
+% Build basic web crawler (done)
+    % TODO problem: Add allowed_domains parameter
+    % TODO problem: Add in fxnality to read html body; search nytimes for all names (word groups of len >= 2, where each word in the group starts with a capital letter.)
+% % % TODO
+% Find good site/data to scrape- imdb? amazon?
+% Use Scrapy or maybe BeautifulSoup for final product 
+% % %
