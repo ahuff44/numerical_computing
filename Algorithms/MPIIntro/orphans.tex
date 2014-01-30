@@ -4,17 +4,17 @@ Stuff that needs a home:
     \begin{itemize}
         \item Python is array-based. C and Fortran are not.
         \item mpi4py is object oriented. MPI in C is not.
-            Because of this, there are some minor changes between the mpi4py implementation of 
+            Because of this, there are some minor changes between the mpi4py implementation of
             MPI and the official MPI specification.
 
-            For instance, the MPI Communicator in mpi4py is a Python class and MPI functions 
-            like \li{Get_size()} or \li{Get_rank()} are instance methods of the communicator class. 
-            Throughout these MPI labs, you will see functions like \li{Get_rank()} presented as 
+            For instance, the MPI Communicator in mpi4py is a Python class and MPI functions
+            like \li{Get_size()} or \li{Get_rank()} are instance methods of the communicator class.
+            Throughout these MPI labs, you will see functions like \li{Get_rank()} presented as
             \li{Comm.Get_rank()} where it is implied that \li{Comm} is a communicator object.
-        \item mpi4py supports two methods of communication to implement each of the basic MPI commands. 
-            They are the upper and lower case commands (e.g. \li{Bcast(...)} and \li{bcast(...)}). 
-            The uppercase implementations use traditional MPI datatypes while the lower case use 
-            Python's pickling method. Pickling offers extra convenience to using mpi4py, 
+        \item mpi4py supports two methods of communication to implement each of the basic MPI commands.
+            They are the upper and lower case commands (e.g. \li{Bcast(...)} and \li{bcast(...)}).
+            The uppercase implementations use traditional MPI datatypes while the lower case use
+            Python's pickling method. Pickling offers extra convenience to using mpi4py,
             but the traditional method is faster. In these labs, we will only use the uppercase functions.
     \end{itemize}
 
@@ -44,3 +44,18 @@ Do we even need this??? Maybe as a recap at enc of the old lab 1
     \end{description}
 
 tell what root node means
+
+SIZE
+    Another very basic method of communicators is \li{COMM.Get_size}, which returns the number of processes that exist within the communicator.
+    Take the following program as an example:
+    \lstinputlisting[style=fromfile]{getSize.py}
+    Now, run this program from the command line using this command:
+    \begin{lstlisting}[style=ShellInput]
+    $ mpirun -n 3 python getSize.py
+    \end{lstlisting}
+    The program should output this:
+    \begin{lstlisting}[style=ShellOutput]
+    There are 3 processes running.
+    There are 3 processes running.
+    There are 3 processes running.
+    \end{lstlisting}
