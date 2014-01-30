@@ -1,0 +1,46 @@
+Stuff that needs a home:
+
+    There are three main differences to keep in mind between mpi4py and MPI in C:
+    \begin{itemize}
+        \item Python is array-based. C and Fortran are not.
+        \item mpi4py is object oriented. MPI in C is not.
+            Because of this, there are some minor changes between the mpi4py implementation of 
+            MPI and the official MPI specification.
+
+            For instance, the MPI Communicator in mpi4py is a Python class and MPI functions 
+            like \li{Get_size()} or \li{Get_rank()} are instance methods of the communicator class. 
+            Throughout these MPI labs, you will see functions like \li{Get_rank()} presented as 
+            \li{Comm.Get_rank()} where it is implied that \li{Comm} is a communicator object.
+        \item mpi4py supports two methods of communication to implement each of the basic MPI commands. 
+            They are the upper and lower case commands (e.g. \li{Bcast(...)} and \li{bcast(...)}). 
+            The uppercase implementations use traditional MPI datatypes while the lower case use 
+            Python's pickling method. Pickling offers extra convenience to using mpi4py, 
+            but the traditional method is faster. In these labs, we will only use the uppercase functions.
+    \end{itemize}
+
+Do we even need this??? Maybe as a recap at enc of the old lab 1
+    Here is the syntax for \li{Get_size()} and \li{Get_rank()}, where \li{Comm} is a communicator object:
+    \begin{description}
+    \item[Comm.Get\_size()]
+    Returns an integer representing the number of processes in the communicator.
+    \emph{This method will return the same number to every process.}
+    Example:
+    % TODO add output?
+    \begin{lstlisting}
+    from mpi4py import MPI
+    SIZE = MPI.COMM_WORLD.Get_size()
+    print "The number of processes is {SIZE}.".format(**locals())
+    \end{lstlisting}
+    \item[Comm.Get\_rank()]
+    Returns an integer representing the rank of the calling process in the communicator.
+    \emph{This method will return a different value to each process.}
+    Example:
+    % TODO add output?
+    \begin{lstlisting}
+    from mpi4py import MPI
+    RANK = MPI.COMM_WORLD.Get_rank()
+    print "My rank is {RANK}.".format(**locals())
+    \end{lstlisting}
+    \end{description}
+
+tell what root node means
