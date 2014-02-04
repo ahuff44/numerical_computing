@@ -2,9 +2,11 @@
 \objective{Learn how to use collective communication to increase the efficiency of parallel programs}
 \label{lab:MPI_Collective_Communication}
 
-  In the lab on the Trapezoidal Rule [\ref{lab:MPI_Trapezoidal_Rule}], we worked to increase the efficiency of the trapezoidal rule by parallelizing the code and by load-balancing the parallel processes. However, the algorithm is still far from being optimized.
+  In the MPI Intro lab (lab \ref{lab:MPI_Intro}), we worked to increase the efficiency of the trapezoid rule by parallelizing the code and by load-balancing the parallel processes. However, the algorithm is still far from being optimized.
 
-  Look back at the summation that the root process (process 0) does. After each process independently calculates its estimate, the results must be compiled somehow, and the method we have chosen is rather inefficient. While the root process sums the data, the other processors sit idly. A more efficient algorithm would balance the work-load so that there are non-idling processes. Additionally, the root process is solely responsible for communicating with each of the other processes. The communication involved in parallel programs is usually a substantial bottleneck, and this is no exception. 
+  Look back at the summation that the root process (process 0) does. After each process independently calculates its estimate, the results must be compiled somehow, and the method we have chosen is rather inefficient. While the root process sums the data, the other processors sit idly. A more efficient algorithm would balance the work-load so that there are non-idling processes.
+
+ Additionally, the root process is solely responsible for communicating with each of the other processes. The communication involved in parallel programs is usually a substantial bottleneck, and this is no exception.
   % TODO learn/explain why communication is such a huge bottleneck
 
   Both of these problems can be somewhat corrected through what is called ``Collective Communication.'' Besides helping to alleviate load imbalances, however, collective communication has a more important purpose: it helps to optimize message passing among separate processes. Communication among processes is expensive. Because each message must be sent over some sort of network, we must minimize and optimize this inter-process communication.
@@ -38,10 +40,10 @@
 
   Furthermore, MPI has methods that can also distribute information in efficient ways. Imagine reversing the arrows in the figure [\ref{fig:fast_sum}]. This is MPI's \emph{Broadcast} function. We should note, though, that the image is a simplification of how MPI performs collective communication. In practice, it is different in every implementation, and is usually more efficient than the simplified example shown. MPI is designed to optimize these methods under the hood, and so we only need to worry about properly applying these functions.
 
-  Knowing this, let's take another look at the trapezoidal rule.
+  Knowing this, let's take another look at the trapezoid rule.
 
 
-\section*{The Parallel Trapezoidal Rule 2.0}
+\section*{The Parallel Trapezoid Rule 2.0}
   Below is the code for our revised edition of the trapezoid rule. (This code requires that the number of trapezoids is evenly divisible by the the number of processes). The main change is that the statement \li{comm.Reduce(integral, total)} has replaced the entire if-else statement that was used to compile the results, including the for loop. Not only does the code look cleaner, it runs faster.
 
   \lstinputlisting[style=fromfile]{trapParallel_2.py}
@@ -52,7 +54,7 @@
 
   So what can we do if we want the result of a summation to be available to all processes? Use the provided subroutine \li{AllReduce}. It does the same thing as \li{Reduce}, but it simultaneously uses each process as the root. That way, by the end of the summation, each process has calculated an identical sum. Duplicate work was done, but in the end, the result ends up on each process at the same time.
 
-  So when should we use \li{Reduce} and when should we use \li{AllReduce}? If it is unimportant for all processes to have the result, as is the case with the Trapezoidal Rule, using \li{Reduce} should be slightly faster than using \li{AllReduce}. On the other hand, if every process needs the information, \li{AllReduce} is the fastest way to go. We could come up with some other solutions to the situation, such as a call to \li{Reduce}, followed by a call to \li{Broadcast}, however these other solutions are always less efficient than just using one call to the collective communication routines. In the end, the less communications, the better.
+  So when should we use \li{Reduce} and when should we use \li{AllReduce}? If it is unimportant for all processes to have the result, as is the case with the Trapezoid Rule, using \li{Reduce} should be slightly faster than using \li{AllReduce}. On the other hand, if every process needs the information, \li{AllReduce} is the fastest way to go. We could come up with some other solutions to the situation, such as a call to \li{Reduce}, followed by a call to \li{Broadcast}, however these other solutions are always less efficient than just using one call to the collective communication routines. In the end, the less communications, the better.
 
   % TODO (originally here from Jeremy's notes) Theoretically, Allreduce could be just as fast as Reduce. Insert Butterfly communication pattern here
 
@@ -65,7 +67,7 @@
     Parameters:
     \begin{description}
       \item[sendbuf (array-like)] – address of send buffer
-      \item[recvbuf (array-like)] – address of recieve buffer (only significant in root process)
+      \item[recvbuf (array-like)] – address of receive buffer (only significant in root process)
       \item[op (MPI Op)] – reduce operation
       \item[root (int)] – rank of root of operation
     \end{description}
@@ -84,13 +86,13 @@
         if RANK == 0:
             SIZE = 1 + int(SIZE_buffer[0])
             print "The size is {SIZE}.".format(**locals())
-      \end{lstlisting} 
+      \end{lstlisting}
   \item[Comm.Allreduce(sendbuf, recvbuf, Op op=MPI.SUM)]
     Reduces values on all processes to a single value on all processes.
     Parameters:
     \begin{description}
       \item[sendbuf (array-like)] – address of send buffer
-      \item[recvbuf (array-like)] – address of recieve buffer (only significant in root process)
+      \item[recvbuf (array-like)] – address of receive buffer (only significant in root process)
       \item[op (MPI Op)] – reduce operation
     \end{description}
     Example:
@@ -110,62 +112,62 @@
   % }\\\hline
 
   % MPI.MAX
-  %  & 
+  %  &
   % maximum
   % \\\hline
 
   % MPI.MIN
-  %  & 
+  %  &
   % minimum
   % \\\hline
 
   % MPI.SUM
-  %  & 
+  %  &
   % sum
   % \\\hline
 
   % MPI.PROD
-  %  & 
+  %  &
   % product
   % \\\hline
 
   % MPI.LAND
-  %  & 
+  %  &
   % logical and
   % \\\hline
 
   % MPI.BAND
-  %  & 
+  %  &
   % bit-wise and
   % \\\hline
 
   % MPI.LOR
-  %  & 
+  %  &
   % logical or
   % \\\hline
 
   % MPI.BOR
-  %  & 
+  %  &
   % bit-wise or
   % \\\hline
 
   % MPI.LXOR
-  %  & 
+  %  &
   % logical xor
   % \\\hline
 
   % MPI.BXOR
-  %  & 
+  %  &
   % bit-wise xor
   % \\\hline
 
   % MPI.MAXLOC
-  %  & 
+  %  &
   % max value and location
   % \\\hline
 
   % MPI.MINLOC
-  %  & 
+  %  &
   % min value and location
   % \\\hline
   % \end{array}
@@ -212,56 +214,56 @@
   % }\\\hline
 
   % Broadcast n = 1000
-  %  & 
+  %  &
   % N/A
-  %  & 
+  %  &
   % About 1000
-  %  & 
+  %  &
   % About 10
   % \\\hline
 
   % Scatter x
-  %  & 
+  %  &
   % N/A
-  %  & 
+  %  &
   % About 1000
-  %  & 
+  %  &
   % About 10
   % \\\hline
 
   % Scatter y
-  %  & 
+  %  &
   % N/A
-  %  & 
+  %  &
   % About 1000
-  %  & 
+  %  &
   % About 10
   % \\\hline
 
   % Compute sum
-  %  & 
+  %  &
   % 1000
-  %  & 
+  %  &
   % 1
-  %  & 
+  %  &
   % 1
   % \\\hline
 
   % Reduce result
-  %  & 
+  %  &
   % N/A
-  %  & 
+  %  &
   % About 1000
-  %  & 
+  %  &
   % About 10
   % \\\hline
 
   % \textbf{Total}
-  %  & 
+  %  &
   % \textbf{About 1000}
-  %  & 
+  %  &
   % \textbf{About 4001}
-  %  & 
+  %  &
   % \textbf{About 41}
   % \\\hline
   % \end{array}

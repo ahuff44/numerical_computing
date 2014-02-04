@@ -2,14 +2,15 @@
 \objective{Learn the basics of parallel computing on distributed memory machines using MPI for Python}
 \label{lab:MPI_Intro}
 
-\section*{Why Parallel Computing?} Over the past few decades, vast increases in
-computational power have come through increased single processor performance,
-which have almost wholly been driven by smaller transistors. However, these
-faster transistors generate more heat, which destabilizes circuits. The so-
-called ``heat wall'' refers to the physical limits of single processors to
-become faster because of the growing inability to sufficiently dissipate heat.
+\section*{Why Parallel Computing?}
+Over the past few decades, vast increases in computational power have come
+through increased single processor performance, which have almost wholly been
+driven by smaller transistors. However, these faster transistors generate more
+heat, which destabilizes circuits. The so- called ``heat wall'' refers to the
+physical limits of single processors to become faster because of the growing
+inability to sufficiently dissipate heat.
 
-Parallel computing was invetened to circumvent this physical limitation. It
+Parallel computing was invented to circumvent this physical limitation. It
 began, as with most things, in many different systems and styles. Some systems
 had shared memory between many processors and some systems had a separate
 program for each processor while others ran all the processors off the same base
@@ -35,10 +36,10 @@ a different kind of software. You can't take a traditional program and expect it
 to magically run faster on a supercomputer; you must design new algorithms in
 ways that take advantage of the unique advantages of parallel computing.
 
-\section*{MPI: the Message Passing Interface} At its most basic, the Message
-Passing Interface (MPI) provides functions for sending and receiving messages
-between different processes. You can think of a process as one of the many
-``normal'' computers that make up a supercomputer.
+\section*{MPI: the Message Passing Interface}
+At its most basic, the Message Passing Interface (MPI) provides functions for
+sending and receiving messages between different processes. You can think of a
+process as one of the many ``normal'' computers that make up a supercomputer.
 
 MPI was developed out of the need for standardization of programming parallel
 systems. It is different than other approaches in that MPI does not require
@@ -66,17 +67,19 @@ standardization.
 % kind of architecture in mind. How does the architecture of a system for which
 % MPI is designed differ what POSIX threads or OpenMP is designed for? What is the
 % difference between MPI and OpenMP or Pthreads?
+% \label{prob:MPI_Intro:MPI_v_threads}
 % \end{problem}
 % TODO research this yourself and figure out whether multiple MPI processes can be run on a single computer
 
-\section*{Why MPI for Python?} In general, parallel programs are much more
-difficult and complex than ``normal'', serial programs. Python is an excellent
-language for algorithm design and for solving problems that don't require
-maximum performance. This makes Python great for prototyping and writing small
-or medium-sized parallel programs. However, Python is not designed specifically
-for high performance computing and its parallel capabilities are still somewhat
-underdeveloped, so in practice it is better to write production code in fast,
-compiled languages, such as C or Fortran.
+\section*{Why MPI for Python?}
+In general, parallel programs are much more difficult and complex than
+``normal'', serial programs. Python is an excellent language for algorithm
+design and for solving problems that don't require maximum performance. This
+makes Python great for prototyping and writing small or medium-sized parallel
+programs. However, Python is not designed specifically for high performance
+computing and its parallel capabilities are still somewhat underdeveloped, so in
+practice it is better to write production code in fast, compiled languages, such
+as C or Fortran.
 
 We will use the Python library \texttt{mpi4py}. This package implements the
 Message Passing Interface in a basic way that makes it relatively easy to port
@@ -94,6 +97,8 @@ If the program fails to start, you may need to try the following syntax:
 \begin{lstlisting}[style=ShellInput]
 $ mpirun -n 3 python.exe hello.py
 \end{lstlisting}
+If you are on a Windows machine, you can also try using PowerShell instead of
+Command Prompt if you still can't get it to work.
 \end{info}
 The program should output something like this:
 \begin{lstlisting}[style=ShellOutput]
@@ -147,11 +152,12 @@ local variable \li{RANK} will be different from each of the other two processes.
 This gives us a way to distinguish between different processes while allowing us
 to write the source code for the three processes in a single file.
 
-\section*{MPI Communicators} An MPI communicator object basically just
-represents a collection of processes. Although processes can access
-communicators through the interface MPI provides, communicators' data is stored
-within the execution environment of the \texttt{mpirun} environment, not within
-the execution environments of the individual processes.
+\section*{MPI Communicators}
+An MPI communicator object basically just represents a collection of processes.
+Although processes can access communicators through the interface MPI provides,
+communicators' data is stored within the execution environment of the
+\texttt{mpirun} environment, not within the execution environments of the
+individual processes.
 
 Communicators allow processes to send and receive messages. In most of our
 programs we will only deal with the \li{MPI.COMM_WORLD} communicator, which
@@ -159,8 +165,8 @@ contains all of the running processes.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=.9\textwidth]{MPI program structure placeholder.jpg}
-\caption{A visualization of how MPI programs are structured.}
+\includegraphics[width=.9\textwidth]{MPI_program_structure_placeholder.png}
+\caption{A visualization of how MPI programs are structured. TODO get a better picture.}
 \label{fig:MPI_program_structure}
 \end{figure}
 
@@ -184,90 +190,76 @@ can think of ranks as being unique IDs assigned to each process.
 \end{info}
 
 \begin{problem}
-Write a program in which the the processes with an even rank print ``Hello'' and
-process with an odd rank print ``Goodbye''. Additionally, each process should
-print its rank and the total number of processes currently running. This program
-should work for any number of processes. For example, if you run this program
-with 6 processes, process 3 should print ``Goodbye from process 3 out of 6''.
+Write a program \texttt{helloGoodbye.py} in which the the processes with an even
+rank print ``Hello'' and process with an odd rank print ``Goodbye''.
+Additionally, each process should print its rank and the total number of
+processes currently running. This program should work for any number of
+processes. For example, if you run this program with 6 processes, process 3
+should print ``Goodbye from process 3 out of 6''.
+\label{prob:MPI_Intro:helloGoodbye.py}
 \end{problem}
 
 \begin{problem}
+This problem will teach you about \li{COMM.Abort()} and \li{COMM.Barrier()}.
+
 Sometimes, a parallel algorithm can only run correctly if it has a certain
 number of processes. Although you typically want to avoid writing these kinds of
 programs, sometimes it is inconvenient or unavoidable. Write a program that runs
-only if it has exactly 5 processes. Upon failure, the root process should print
-``Error: This program must run with exactly 5 processes'' and upon success
-\emph{every} process should print ``Success!'' (To exit, call the function
-\li{COMM.Abort()} from the root process)
+only if it has exactly 5 processes.
+
+If there are not exactly 5 processes, the root process should print ``Error:
+This program must run with exactly 5 processes.'' and call \li{COMM.Abort()},
+which basically forces your program to stop immediately.
+
+If there are exactly 5 processes, \emph{every} process should print
+``Success!''. When a process calls \li{COMM.Barrier()}, it will freeze until
+\emph{all} processes have called \li{COMM.Barrier()}. If you don't use this, it
+is possible some process might execute \li{print \"Success\"} before process 0
+has a chance to check whether there are exactly 5 processes.
+\label{prob:MPI_Intro:AbortBarrier.py}
 \end{problem}
 
-
-
-
-
-
-
-
-
-
-% TODO working here; see paper notes
-
-
-
-
-
-
-
-
-
-
-\section*{Simple Message Passing} Let us begin by demonstrating a program
-designed for two processes. One will draw a random number and then send it to
-the other. We will do this using the methods \li{Comm.Send} and \li{Comm.Recv}
-(short for ``receive''):
+\section*{Simple Message Passing}
+With message passing, the processes in our programs can interact. Let us begin
+by demonstrating a program designed for two processes. One will draw a random
+number and then send it to the other. We will do this using the methods
+\li{COMM.Send} and \li{COMM.Recv} (short for ``receive''):
 
 \lstinputlisting[style=fromfile]{passValue.py}
 
 To illustrate simple message passing, we have one process choose a random number
-and then pass it to the other. Inside the recieving process, we have it print
-out the value of the variable \li{num_buffer} \emph{before} it calls \li{Recv}
-to prove that it really is recieving the variable through the message passing
-interface.
+and then pass it to the other. Inside the receiving process, we have it print
+out the value of the variable \li{receive_buffer} \emph{before} it calls
+\li{Recv} to prove that it really is receiving the variable through the message
+passing interface.
+
+\begin{warn}
+Due to the implementation of Python and mpi4py, you \emph{must} use a numpy
+array to send and receive messages. When receiving a message, the receiving
+array must be of the same size and data type as the array that was sent.
+% TODO add more info here about WHY
+\end{warn}
 
 Here is the syntax for \li{Send} and \li{Recv}, where \li{Comm} is a
 communicator object:
 
 \begin{description}
-\item[Comm.Send(buf, dest=0, tag=0)]
-Performs a basic send. This send is a point-to-point communication. It sends information from exactly one process to exactly one other process.
-Parameters:
+\item[COMM.Send(buf, dest=0, tag=0)]
+Sends an array of values to exactly one process to exactly one other process.
 \begin{description}
 \item[buf (array-like)] – data to send.
 
     % TODO expand here- must be numpy array (as a pointer) and won't work with strings
 
 \item[dest (integer)] – rank of destination
-\item[tag (integer)] – message tag
+\item[tag (integer)] – message tag; see problem \ref{prob:MPI_Intro:Send_parameters} % TODO fix this link
 \end{description}
 Example:
-\begin{lstlisting}
-#Send_example.py
-from mpi4py import MPI
-import numpy as np
 
-RANK = MPI.COMM_WORLD.Get_rank()
+\lstinputlisting[style=fromfile]{Send.py}
 
-a = np.zeros(1, dtype=int)  # This must be an array
-if RANK == 0:
-    a[0] = 10110100
-    MPI.COMM_WORLD.Send(a, dest=1)
-elif RANK == 1:
-    MPI.COMM_WORLD.Recv(a, source=0)
-    print a[0]
-\end{lstlisting}
-\item[Comm.Recv(buf, source=0, tag=0, Status status=None)]
-Basic point-to-point receive of data.
-Parameters:
+\item[COMM.Recv(buf, source=0, tag=0)]
+Waits for a message from \emph{source} and reads the result into \emph{buf}.
 \begin{description}
 \item[buf (array-like)] – initial address of receive buffer (choose receipt location)
 \item[source (integer)] – rank of source
@@ -275,40 +267,95 @@ Parameters:
 \item[status (Status)] – status of object
 \end{description}
 Example:
-See example for Send()
+\emph{See Send()}
 \end{description}
 
 \begin{info}
-\li{Send} and \li{Recv} are referred to as \emph{blocking} functions. That is, if a process calls \li{Recv}, it will sit idle until it has received a message from a corresponding \li{Send} before it will proceeed. (However, the process that calls \li{Comm.Send} will \emph{not} necessarily block until the message is recieved- it depends on the implementation) There are corresponding \emph{non-blocking} functions \li{Isend} and \li{Irecv} (The \emph{I} stands for immediate). In essence, \li{Irecv} will return immediately. If a process calls \li{Irecv} and doesn't find a message ready to be picked up, it will indicate to the system that it is expecting a message, proceed beyond the \li{Irecv} to do other useful work, and then check back later to see if the message has arrived. This can be used to dramatically improve performance.
+\li{Send} and \li{Recv} are referred to as \emph{blocking} functions. That is,
+if a process calls \li{Recv}, it will sit idle until it has received a message
+from a corresponding \li{Send} before it will proceed.
+
+\emph{However}, the process that calls \li{COMM.Send} will \emph{not}
+necessarily block until the message is received- it depends on the
+implementation.
+
+There are corresponding \emph{non-blocking} functions \li{Isend} and \li{Irecv}
+(The \emph{I} stands for ``immediate''). In essence, \li{Irecv} will return
+immediately. If a process calls \li{Irecv} and doesn't find a message ready to
+be picked up, it will indicate to the system that it is expecting a message,
+proceed beyond the \li{Irecv} to do other useful work, and then check back later
+to see if the message has arrived. In certain cases this can dramatically
+improve performance.
+% TODO Research more.
+%   Is Send blocking in C? It isn't in on my machine.
+%   When is it better to use Irecv/Isend
 \end{info}
 
-% TODO ASK is Send blocking in C? It isn't in python... I added in a note here
 
 \begin{info}
-When calling \li{Comm.Recv}, you can allow the calling process to accept a message from any process that happend to be sending to the receiving process. This is done by setting source to a predefined MPI constant, \li{source=ANY_SOURCE} (note that you would first need to import this with from \li{mpi4py.MPI import ANY_SOURCE} or use the syntax \li{source=MPI.ANY_SOURCE}).
+Although the \li{COMM.Recv} parameter \li{source} is usually used to specify
+that the process is waiting for a message from a specific process, if you call
+\li{COMM.Recv(msg_buf, source=MPI.ANY_SOURCE)}, you can receive a message from
+any process.
 \end{info}
 
 
 \begin{problem}
-Write a Python script \texttt{passVector.py} (adapted from \texttt{passValue.py}) that passes an $n$ by $1$ vector of random values from one process to the other. Write it so that the user passes the value of $n$ in as a command-line argument (similar to the code developed later in this lab for the trapezoidal rule).
+Write a Python script \texttt{passVector.py} (adapted from
+\texttt{passValue.py}) that passes an $n$ by $1$ vector of random values from
+one process to the other. Write it so that the user passes the value of $n$ in
+as a command-line argument.
+
+For an example of using command-line arguments in MPI programs, see page
+\pageref{lst:MPI_Intro:trapParallel.py}. (It isn't any different than in non-MPI
+programs)
+\label{prob:MPI_Intro:passVector.py}
 \end{problem}
 
 \begin{problem}
-Try modifying some of the parameters in \li{Send} and \li{Recv} in the code from the previous exercise (\li{dest}, \li{source}, and \li{tag}).  What happens to the program? Does it hang or crash? What do you suppose the \li{tag} parameter does?
+Try modifying some of the parameters in \li{Send} and \li{Recv} in the code from
+the previous exercise (\li{dest}, \li{source}, and \li{tag}).  What happens to
+the program? Does it hang or crash? What do you suppose the \li{tag} parameter
+does?
+\label{prob:MPI_Intro:Send_parameters}
 \end{problem}
 % TODO delete this one?
 
+% ~Answer:
+% MPI has two mechanisms specifically designed to partition the message
+% space: tags and communicators. The tag parameter is there in the case that two
+% messages with the same size and data type are sent to the same process. In
+% that case, the program would not necessarily be able to tell apart the data.
+% So the programmer can attach different tags that he or she defines to the sent
+% data to keep them straight.
+
 \begin{problem}
-Write a Python script \texttt{passCircular.py} (again adapted from \texttt{passValue.py}). This time, write the program so that each process with rank $i$ sends a random value to the process with rank $i+1$ in the global communicator. The process with the highest rank will send its random value to the root process. Notice that we are communicating in a ring. For communication, only use \li{Send} and \li{Recv}. The program should work for any number of processes. (Hint: Remember that \li{Send} and \li{Recv} are blocking functions. Does the order in which \li{Send} and \li{Recv} are called matter?)
-% TODO \li{} for referencing file?
+Write a Python script \texttt{passCircular.py} (again adapted from
+\texttt{passValue.py}). This time, write the program so that each process with
+rank $i$ sends a random value to the process with rank $i+1$ in the global
+communicator. The process with the highest rank should send its random value to
+the root process. (The root process is the process of rank 0)
+
+Notice that we are communicating in a ring. For communication, only use
+\li{Send} and \li{Recv}. The program should work for any number of processes.
+(Hint: Remember that \li{Send} and \li{Recv} are blocking functions. Does the
+order in which \li{Send} and \li{Recv} are called matter?)
+\label{prob:MPI_Intro:passCircular.py}
 \end{problem}
 
-\section*{The Trapezoidal Rule}
-Now that we understand basic communication in MPI, we will proceed by parallelizing our first algorithm--numerical integration using the ``trapezoidal rule.'' Early on in most calculus classes, students learn to estimate integrals using the trapezoidal rule. A range to be integrated is divided into many vertical slivers, and each sliver is approximated with a trapezoid. The area of each trapezoid is computed, and then all their areas are added together.
+\section*{The Trapezoid Rule}
+Now that we understand basic communication in MPI, we will proceed by
+parallelizing our first algorithm--numerical integration using the ``trapezoid
+rule''. Early on in most calculus classes, students learn to estimate integrals
+using the trapezoid rule. A range to be integrated is divided into many
+vertical slices, and each slice is approximated with a trapezoid. Next, the area
+of each trapezoid is computed and these areas are summed to produce an estimate
+of the function's integral. The following formula uses this algorithm to
+estimate an integral using $n$ trapezoids:
 
-% LaTeX to display the trapezoidal rule:
+% LaTeX to display the trapezoid rule:
 \begin{eqnarray*}%{rcl}
-\textrm{Area}
+\int_{a}^{b} \! f(x) \, \mathrm{d} x
 &\approx&
 \sum_{i=0}^{n-1}\frac{[f(a+i \Delta x)+f(a + (i+1) \Delta x)]}{2}\cdot\Delta x \\
 &=&
@@ -319,68 +366,128 @@ where $\Delta x=(b-a)/n$.
 % Trapezoid rule picture:
 \begin{figure}[h]
 \centering
-\includegraphics[width=.5\textwidth]{TrapezoidRule.png}
+\includegraphics[width=.5\textwidth]{trapezoid_rule_theory_placeholder.png}
 \caption{The trapezoid rule in action. TODO get a copyright-kosher version.}
-\label{fig:trapezoidal_rule}
+\label{fig:trapezoid_rule}
 \end{figure}
-% I took this template for icluding images from the data structures lab
+% I took this template for including images from the data structures lab
 
-In Python, a simple serial formulation of the trapezoidal rule would be as follows:
+The following Python program is a simple serial (as opposed of parallel)
+implementation of the trapezoid rule:
 
 \lstinputlisting[style=fromfile]{trapSerial.py}
 
-A moment of thought should convince the reader that this algorithm reflects the formula given above.
+This serial implementation will be the basis for our parallel implementation.
 
-\section*{Parallelizing the Trapezoidal Rule}
-The first and most important step in parallelizing an algorithm is determining which computations are independent. With the trapezoidal rule, it's easy to see that the area of each trapezoid can be calculated independently, so dividing the data at the trapezoid level seems natural.
+\section*{Parallelizing the Trapezoid Rule}
+\emph{The first and most important step in parallelizing an algorithm is
+determining which steps of the algorithm can be computed independently}. In this
+case, it is easy to see that the area of each trapezoid can be calculated
+independently.
 
-Currently, the algorithm divides up the interval into $n$ subintervals. To parallelize this process, we will distribute these $n$ subintervals to the available processes:
+Currently, the algorithm divides up the interval $[a,b]$ into $n$ subintervals.
+To parallelize this process, we will distribute these $n$ subintervals to the
+available processes:
 
-\lstinputlisting[style=fromfile]{trapParallel_1.py}
+\lstinputlisting[style=fromfile, label=lst:MPI_Intro:trapParallel.py]{trapParallel.py}
 
-In this parallel approach, the original interval is split such that each process gets an equal-sized subinterval to integrate. After integrating, each process sends its result to the root node, which sums up the results and displays them. Although this is fairly straightforward, there are two important things to note:
+In this parallel approach, the original interval is split such that each process
+gets an equal-sized subinterval to integrate. After integrating, each process
+sends its result to the root node, which sums up the values and displays the
+final result. Although this is fairly straightforward, there are two important
+things to note:
 
-First, notice how the trapezoids are divided among the processes: The processors each individually calculate the specifics of which subinterval they will be integrating. We could have written the algorithm such that process 0 divides up the work for the other processors and tells them each what their ranges are. However, this would introduce an unnecessary bottleneck: all of the other processes would be idling while waiting for their assignment to arrive from the root process. By having each process calculate its own range, we gain a large speedup.
+First, notice how the trapezoids are divided among the processes: The processors
+each individually calculate what their \li{local_a}, \li{local_b}, and
+\li{local_n} should be. We could have written the algorithm in a way such that
+the root process figures out these values for every process and then tells each
+process what their values should be. However, this would introduce an
+unnecessary bottleneck: all of the other processes would be idling while waiting
+for their assignment to arrive from the root process. By having each process
+calculate its own range, we gain a large speedup. (Keep this in mind for problem
+\ref{prob:MPI_Intro:trapParallelLoadBalanced.py})
 
-Second, notice how the results are summed. We know how many results we should be receiving, so the root process simply accepts the messages in the order that they arrive. This is achieved using the tag \li{MPI.ANY_SOURCE} in the \li{COMM.Recv} method. In following labs we will learn about even more effective ways to gather the results of many different processes' computations.
-% todo link to lab where we learn gather (next lab). Talk about the speed up we gained here? but in this case there is no speedup...
+Second, notice how the results are summed. We know how many results we should be
+receiving, so the root process simply accepts the messages in the order that
+they arrive. This is achieved using the tag \li{MPI.ANY_SOURCE} in the
+\li{COMM.Recv} method, rather than insisting that the results arrive in order.
+In lab \ref{lab:MPI_Collective_Communication}, we will learn about even more
+effective ways to gather results from many different processes.
+% todo link to lab where we learn gather (next lab). Talk about the speed up we
+% gained here? but in this case there is no speedup...
 
-% MPI has two mechanisms specifically designed to partition the message space: tags and communicators. The tag parameter is there in the case that two messages with the same size and datatype are sent to the same process. In that case, the program would not necessarily be able to tell apart the data. So the programmer can attach different tags that he or she defines to the sent data to keep them straight.
-% TODO find somewhere else for this paragraph to fit in maybe? Maybe as the answer to that problem from the intro that asks what tags do?
-
-At this point, you should test the code for yourself. Save the code in a file named \texttt{trapParallel\_1.py} and try running it from the command line using the following input:
-\begin{lstlisting}[style=ShellInput]
-$ mpirun -n 4 python trapParallel_1.py 0.0 1.0 10000
-\end{lstlisting}
-The output should appear like this:
-\begin{lstlisting}[style=ShellOutput]
-With 10000 trapezoids, our estimate of the integral of x^2 from 0.0 to 1.0 is:
-    0.333333335
-\end{lstlisting}
 We have successfully parallelized our first algorithm!
 
-
 \section*{Load Balancing}
-Although we have parallelized the trapezoidal rule, our algorithm is still rather naive. Notice that if the number of processes does not evenly divide the number of trapezoids, the code will break down. Try running the trapezoid program with n = 10007 trapezoids:
+Although we have parallelized the trapezoid rule, our algorithm is still rather
+naive. Notice that if the number of processes does not evenly divide the number
+of trapezoids, the code will break down. Try running the trapezoid program with
+n = 10000 and n = 10007 trapezoids:
 \begin{lstlisting}[style=ShellInput]
-$ mpirun -n 4 python trapParallel_1.py 0.0 1.0 10007
+$ mpirun -n 4 python trapParallel.py 0.0 1.0 10000
+$ mpirun -n 4 python trapParallel.py 0.0 1.0 10007
 \end{lstlisting}
 This will produce the following:
 \begin{lstlisting}[style=ShellOutput]
+With 10000 trapezoids, our estimate of the integral of x^2 from 0.0 to 1.0 is:
+    0.333333335
 With 10007 trapezoids, our estimate of the integral of x^2 from 0.0 to 1.0 is:
-    0.333233404949
+    0.333033634715
 \end{lstlisting}
 
-We know that the estimate of the integral should improve as $n$ grows larger, but this estimate is much worse. This happened because \li{local_n}, the number of trapezoids that each processor calculates, must be an integer. To solve this problem, we could require that the user always choose a value of $n$ that is divisible by the number of processors. However, good parallel code should let the user worry as little as possible about the parallelization and should function exactly as the serial version does. Thus, we should improve the code to let it handle the case where $n$ is not divisible by the number of processes.
+We know that the estimate of the integral should improve as $n$ grows larger,
+but this doesn't seem to be the case. This is because \li{local_n}, the number
+of trapezoids that each processor calculates, must clearly be an integer. To
+solve this problem, we could require that the user always choose a value of $n$
+that is divisible by the number of processors. However, \emph{good parallel
+algorithms should let the user worry as little as possible about how the
+parallelization works.} Good parallel algorithms' interfaces should generally be
+almost exactly the same as a serial algorithm that gets the same result. Thus,
+we should make our code more robust and make it work even if $n$ is not
+divisible by the number of processes.
 
-One way to solve this problem would be to designate one process to handle the leftover trapezoids that; i.e. give each process \li{int(n/SIZE)} trapezoids and assign the remaining \li{n \% SIZE} trapezoids to the last process as well. Thus, the \li{local_n} of each process would be an integer. However, this method can be incredibly inefficient: What if we ran the program with $100$ processes and $n=1099$ trapezoids? Then each process would have \li{int(1099/100) = 10} trapezoids to calculate... except for the last process, which would have \li{10 + 1099 \% 100 = 109} trapezoids!
+One way to solve this problem would be to designate one process to handle the
+leftover trapezoids that; i.e. give each process \li{int(n/SIZE)} trapezoids and
+assign an additional \li{n \% SIZE} trapezoids to the last process. Thus, the
+\li{local_n} of each process would be an integer. However, this method can be
+incredibly inefficient; suppose we ran the program with 100 processes and 1099
+trapezoids? Then each process would have \li{int(1099/100) = 10} trapezoids to
+calculate... except for the last process, which would have \li{int(1099/100)
++ (1099 \% 100) = 109} trapezoids!
 
-\emph{A parallel program can only be as fast as its slowest process.} We call this principle \emph{load balancing}. In this case, one process has to do over ten times as much work as the other processes! The other processes will end up waiting idle until the last one finishes. Ignoring communication costs and other overhead, this program could be nearly 10 times faster if we divided up the work more evenly. The important concept to remember is that any time a process is idling, we are losing efficiency.
+\emph{A parallel program can only be as fast as its slowest process.} We call
+this principle \emph{load balancing}. In this case, one process has to do over
+ten times as much work as the other processes! The other processes will end up
+waiting idle until the last one finishes. Ignoring communication costs and other
+overhead, this program could be nearly \emph{10 times faster} if we divided up the work
+more evenly!
 
-In the case of the trapezoidal rule, load-balancing the code means two things. First, between any two processes, the number of trapezoids given to each must differ by at most $1$. Second, each process should estimate the area of a contiguous group of trapezoids. Although estimating an integral is not a very time-consuming operation, by estimating over contiguous groups of trapezoids we are minimizing the amount of duplicate work the processes have to do, which is good practice.
+In the case of the trapezoid rule, load-balancing the code means two things.
+First, for any two processes, the number of trapezoids assigned to each process
+should differ by at most 1. Second, each process should estimate the area of a
+contiguous group of trapezoids. Although estimating an integral is not a very
+time-consuming operation, by estimating over contiguous groups of trapezoids we
+are minimizing the amount of duplicate work the processes have to do, which is
+good practice.
 
 \begin{problem}
-Implement the \emph{load-balancing} fix to the code \texttt{trapParallel\_1.py}. The program should be able to take in any number of trapezoids $n$ for any number of processes and the trapezoids should be divided among the processes evenly, differing by at most one between any two processes. Each process should independently calculate which section of trapezoids it should calculate.
+Implement the load-balancing fix to the code \texttt{trapParallel.py}. The
+program should be able to take in any number of trapezoids $n$ for any number of
+processes and the trapezoids should be divided among the processes evenly,
+differing by at most one between any two processes. Each process should
+independently calculate which section of trapezoids it should calculate.
 
-For example, if the program is run with 5 processes and 12 trapezoids, processes 0 should calculate the first 3 trapezoids, process 1 should calculate the next 3 trapezoids, process 2 should calculate the next 2 trapezoids, process 3 should calculate the next 2 trapezoids, and process 4 should calculate the last 2 trapezoids.
+For example, if the program is run with 5 processes and 12 trapezoids, processes
+0 should calculate the first 3 trapezoids, process 1 should calculate the next 3
+trapezoids, process 2 should calculate the next 2 trapezoids, process 3 should
+calculate the next 2 trapezoids, and process 4 should calculate the last 2
+trapezoids.
+\label{prob:MPI_Intro:trapParallelLoadBalanced.py}
 \end{problem}
+
+\section*{Speed}
+
+TODO
+
+Talk about how we reduced function calls by 2x from original equation
+Talk about how parallel speedup is limited, especially in this case. (Also in general due to how \emph{expensive} communication is)

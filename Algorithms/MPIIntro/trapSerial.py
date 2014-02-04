@@ -1,6 +1,8 @@
-""" trapSerial.py
+"""
+    Estimates an integral using the trapezoid rule (serial implementation)
     Example usage:
         $ python trapSerial.py 0.0 1.0 10000
+    Example output:
         With 10000 trapezoids, the estimate of the integral of x^2 from 0.0 to 1.0 is:
             0.333333335
 """
@@ -23,14 +25,14 @@ def integrate_range(fxn, a, b, n):
 
     return integral
 
-# An arbitrary test function to integrate
-def function(x):
-    return x**2
-
-# Read the command line arguments
+# Reading the command line arguments
 a = float(argv[1])
 b = float(argv[2])
 n = int(argv[3])
+
+# An arbitrary function with a well-known integral
+def function(x):
+    return x**2
 
 result = integrate_range(function, a, b, n)
 print "With {n} trapezoids, the estimate of the integral of x^2 from {a} to {b} is: \n\t{result}".format(**locals())
