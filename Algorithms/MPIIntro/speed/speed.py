@@ -33,7 +33,7 @@ if RANK == 0:
     # print "ser:", sum(x**2 for x in vector)
 else:
     recv_buf = np.zeros(STEP_SIZE)
-    COMM.Recv(buf)
+    COMM.Recv(recv_buf)
     send_buf = np.zeros(1)
     send_buf[0] = expensiveFunction(recv_buf)
     COMM.Send(send_buf)
